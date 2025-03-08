@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS flask_python;
-USE flask_python;
+CREATE DATABASE IF NOT EXISTS testdb;
+USE testdb;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
