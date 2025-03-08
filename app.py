@@ -13,11 +13,15 @@ db_config = {
     'user': os.getenv('MYSQL_USER'),
     'password': os.getenv('MYSQL_PASSWORD'),
     'database': os.getenv('MYSQL_DATABASE')
-    }
-
+}
 
 @app.route('/')
 def index():
+    connection = None
+    cursor = None
+    users = []
+    usersheader = []
+    
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
@@ -29,9 +33,13 @@ def index():
         # Fetch usersheader data
         cursor.execute("SELECT header FROM usersheader")
         usersheader = cursor.fetchall()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
     return render_template('index.html', users=users, usersheader=usersheader)
 
@@ -40,15 +48,21 @@ def add_user():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        connection = None
+        cursor = None
 
         try:
             connection = mysql.connector.connect(**db_config)
             cursor = connection.cursor()
             cursor.execute("INSERT INTO users (name, email) VALUES (%s, %s)", (name, email))
             connection.commit()
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
         finally:
-            cursor.close()
-            connection.close()
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
 
         return redirect(url_for('index'))
 
@@ -56,21 +70,29 @@ def add_user():
 
 @app.route('/delete/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
+    connection = None
+    cursor = None
+
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor()
-
-        # Delete the user with the specified ID
         cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         connection.commit()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
     return redirect(url_for('index'))
 
 @app.route('/update/<int:user_id>', methods=['GET', 'POST'])
 def update_user(user_id):
+    connection = None
+    cursor = None
+
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -78,26 +100,31 @@ def update_user(user_id):
         try:
             connection = mysql.connector.connect(**db_config)
             cursor = connection.cursor()
-
-            # Update user details
             cursor.execute("UPDATE users SET name = %s, email = %s WHERE id = %s", (name, email, user_id))
             connection.commit()
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
         finally:
-            cursor.close()
-            connection.close()
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
 
         return redirect(url_for('index'))
 
+    user = None
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
-
-        # Fetch user details for pre-filling the form
         cursor.execute("SELECT id, name, email FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
     return render_template('update_user.html', user=user)
 
