@@ -1,4 +1,4 @@
-CREATE DATABASE flask_python;
+CREATE DATABASE IF NOT EXISTS flask_python;
 USE flask_python;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
