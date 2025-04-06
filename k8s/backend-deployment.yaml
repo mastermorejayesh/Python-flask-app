@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jayeshmore2550/python-flask-app:latest 
+        image: jayeshmore2550/python-flask-app:latest
         ports:
         - containerPort: 5000
         env:
@@ -34,8 +34,9 @@ metadata:
 spec:
   selector:
     app: backend
+  type: NodePort
   ports:
   - protocol: TCP
     port: 5000
     targetPort: 5000
-  type: ClusterIP
+    nodePort: 30007  # You can choose any available port between 30000-32767

@@ -1,42 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: mysql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: mysql
   template:
     metadata:
       labels:
-        app: backend
+        app: mysql
     spec:
       containers:
-      - name: backend
-        image: your-dockerhub-username/backend-flask-app:latest  # <-- Replace this!
-        ports:
-        - containerPort: 5000
+      - name: mysql
+        image: mysql:8.0
         env:
-        - name: MYSQL_HOST
-          value: "mysql-service"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        - name: MYSQL_DATABASE
+          value: "testdb"
         - name: MYSQL_USER
           value: "myuser"
         - name: MYSQL_PASSWORD
           value: "password"
-        - name: MYSQL_DATABASE
-          value: "testdb"
+        ports:
+        - containerPort: 3306
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: mysql-service
 spec:
   selector:
-    app: backend
-  type: NodePort
+    app: mysql
   ports:
   - protocol: TCP
-    port: 5000
-    targetPort: 5000
-    nodePort: 30007  # You can choose any available port between 30000-32767
+    port: 3306
+    targetPort: 3306
+  type: ClusterIP
