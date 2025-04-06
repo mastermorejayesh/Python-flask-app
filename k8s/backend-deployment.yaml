@@ -14,18 +14,18 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jayeshmore2550/python-flask-app:latest
-        env:
-        - name: DB_HOST
-          value: "mysql-service"
-        - name: DB_USER
-          value: "root"
-        - name: DB_PASSWORD
-          value: "password"
-        - name: DB_NAME
-          value: "testdb"
+        image: jayeshmore2550/python-flask-app:latest 
         ports:
         - containerPort: 5000
+        env:
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_USER
+          value: "myuser"
+        - name: MYSQL_PASSWORD
+          value: "password"
+        - name: MYSQL_DATABASE
+          value: "testdb"
 ---
 apiVersion: v1
 kind: Service
@@ -38,4 +38,4 @@ spec:
   - protocol: TCP
     port: 5000
     targetPort: 5000
-  type: NodePort
+  type: ClusterIP
